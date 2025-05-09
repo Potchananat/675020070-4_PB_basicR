@@ -1,0 +1,109 @@
+---
+title: "Homework"
+author: "พจนนาฏ บุญยงค์"
+date: "2025-05-08"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+plant_growth_data <- read.csv("plant_growth_data.csv")
+```
+
+```{r}
+head(plant_growth_data)
+```
+```{r}
+library(dplyr)
+```
+```{r}
+library(ggplot2)
+```
+
+```{r}
+# ใช้ dplyr เพื่อคำนวณค่าเฉลี่ยตาม Species และ Treatment
+avg_data <- plant_growth_data %>%
+  group_by(Species, Treatment) %>%
+  summarise(
+    Avg_Height_cm = mean(Height_cm),
+    Avg_Leaf_Count = mean(Leaf_Count),
+    Avg_Flower_Count = mean(Flower_Count),
+    Avg_Soil_pH = mean(Soil_pH),
+    Avg_Chlorophyll_Content = mean(Chlorophyll_Content),
+    Avg_Stem_Diameter = mean(Stem_Diameter),
+    Avg_Days_to_Flowering = mean(Days_to_Flowering)
+  )
+# แสดงผล
+print(avg_data)
+```
+```{r}
+head(avg_data)
+```
+```{r}
+# เลือกข้อมูล Rosa/Control
+rosa_control <- avg_data %>%
+  filter(Species == "Rosa", Treatment == "Control")
+```
+
+```{r}
+rosa_control_long <- data.frame(
+  Variable = c("Height_cm", "Leaf_Count", "Flower_Count", "Soil_pH", "Chlorophyll_Content", "Stem_Diameter", "Days_to_Flowering"),
+  Value = c(rosa_control$Avg_Height_cm, rosa_control$Avg_Leaf_Count, rosa_control$Avg_Flower_Count,
+            rosa_control$Avg_Soil_pH, rosa_control$Avg_Chlorophyll_Content, rosa_control$Avg_Stem_Diameter,
+            rosa_control$Avg_Days_to_Flowering)
+)
+```
+
+```{r}
+# พล็อตกราฟแท่ง
+ggplot(rosa_control_long, aes(x = Variable, y = Value)) +
+  geom_bar(stat = "identity", fill = "pink") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Average Measurements for Rosa/Control", x = "Measurement", y = "Average Value")
+```
+```{r}
+# เลือกข้อมูลกลุ่ม Control
+control_data <- avg_data %>%
+  filter(Treatment == "Control")
+```
+
+```{r}
+# พล็อตกราฟแท่ง
+ggplot(control_data, aes(x = Species, y = Avg_Height_cm, fill = Species)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Average Height_cm in Control Group by Species", x = "Species", y = "Average Height (cm)")
+```
+```{r}
+# เลือกข้อมูลกลุ่ม Fertilizer
+fertilizer_data <- avg_data %>%
+  filter(Treatment == "Fertilizer")
+```
+
+```{r}
+# พล็อตกราฟแท่ง
+ggplot(fertilizer_data, aes(x = Species, y = Avg_Chlorophyll_Content, fill = Species)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Average Chlorophyll_Content in Fertilizer Group by Species", x = "Species", y = "Average Chlorophyll Content")
+```
+```{r}
+# พล็อตกราฟแท่ง โดยใช้ Species และ Treatment
+ggplot(avg_data, aes(x = Species, y = Avg_Days_to_Flowering, fill = Treatment)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Average Days_to_Flowering by Species and Treatment", x = "Species", y = "Average Days to Flowering", fill = "Treatment")
+```
+
+
+
+
+
+
+
+
+
